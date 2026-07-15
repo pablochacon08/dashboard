@@ -43,5 +43,5 @@ export interface Hourly {
   wind_speed_10m: number[]
   temperature_2m: number[]
   relative_humidity_2m: number[]
-  apparent_temperature: number[]
+  apparent_temperature?: number[]
 }

@@ -1,24 +1,49 @@
 import { LineChart } from '@mui/x-charts/LineChart';
 import Typography from '@mui/material/Typography';
+import { CircularProgress, Box } from '@mui/material';
+import { type OpenMeteoResponse } from '../types/DashboardTypes';
 
-const arrValues1 = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const arrValues2 = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const arrLabels = ['A','B','C','D','E','F','G'];
+interface ChartUIProps {
+   data: OpenMeteoResponse | null;
+}
 
+function processChartData(data: OpenMeteoResponse) {
+   // Tomar los primeros 24 registros (24 horas)
+   const hours = Math.min(24, data.hourly.time.length);
+   const times = data.hourly.time.slice(0, hours).map(time => {
+      const date = new Date(time);
+      return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+   });
+   const temperatures = data.hourly.temperature_2m.slice(0, hours);
+   const windSpeeds = data.hourly.wind_speed_10m.slice(0, hours);
+   
+   return { times, temperatures, windSpeeds };
+}
 
-export default function ChartUI() {
+export default function ChartUI({ data }: ChartUIProps) {
+   if (!data) {
+      return (
+         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+            <CircularProgress />
+         </Box>
+      );
+   }
+
+   const { times, temperatures, windSpeeds } = processChartData(data);
+
    return (
       <>
          <Typography variant="h5" component="div">
-            Chart arrLabels vs arrValues1 & arrValues2
+            Pronóstico: Temperatura y Velocidad del Viento (24h)
          </Typography>
          <LineChart
             height={300}
             series={[
-               { data: arrValues1, label: 'value1'},
-               { data: arrValues2, label: 'value2'},
+               { data: temperatures, label: 'Temperatura (°C)' },
+               { data: windSpeeds, label: 'Viento (km/h)' },
             ]}
-            xAxis={[{ scaleType: 'point', data: arrLabels }]}
+            xAxis={[{ scaleType: 'point', data: times }]}
+            margin={{ bottom: 30, left: 40, right: 10, top: 10 }}
          />
       </>
    );
