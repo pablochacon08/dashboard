@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import Typography from '@mui/material/Typography';
 import { CircularProgress } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { type OpenMeteoResponse } from '../types/DashboardTypes';
