@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 import { CircularProgress } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { type OpenMeteoResponse } from '../types/DashboardTypes';
@@ -23,11 +24,10 @@ function processHourlyData(data: OpenMeteoResponse) {
       }).replace(' ', ' '),
       temperature: data.hourly.temperature_2m[index],
       windSpeed: data.hourly.wind_speed_10m[index],
-      humidity: data.hourly.relative_humidity_2m?.[index] ?? null,
    }));
 }
 
-const columns: GridColDef[] = [
+const columns: GridColDef[] = [ 
    { field: 'id', headerName: 'ID', width: 60 },
    {
       field: 'time',
@@ -46,16 +46,10 @@ const columns: GridColDef[] = [
       width: 150,
       valueFormatter: (value: number | null | undefined) => value === null || value === undefined ? '-' : `${value.toFixed(1)}`,
    },
-   {
-      field: 'humidity',
-      headerName: 'Humedad (%)',
-      width: 130,
-      valueFormatter: (value: number | null | undefined) => value === null || value === undefined ? '-' : `${value}%`,
-   },
 ];
 
 export default function TableUI({ data, loading, error }: TableUIProps) {
-   if (loading) {
+   if (loading && !data) {
       return (
          <Box sx={{ height: 350, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <CircularProgress />

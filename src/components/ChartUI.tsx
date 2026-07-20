@@ -24,13 +24,12 @@ function processChartData(data: OpenMeteoResponse) {
    });
    const temperatures = data.hourly.temperature_2m.slice(0, hours);
    const windSpeeds = data.hourly.wind_speed_10m.slice(0, hours);
-   const humidity = data.hourly.relative_humidity_2m.slice(0, hours);
    
-   return { times, temperatures, windSpeeds, humidity };
+   return { times, temperatures, windSpeeds };
 }
 
 export default function ChartUI({ data, loading, error }: ChartUIProps) {
-   if (loading) {
+   if (loading && !data) {
       return (
          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
             <CircularProgress />
@@ -54,23 +53,22 @@ export default function ChartUI({ data, loading, error }: ChartUIProps) {
       );
    }
 
-   const { times, temperatures, windSpeeds, humidity } = processChartData(data);
+   const { times, temperatures, windSpeeds } = processChartData(data);
 
    return (
-      <>
-         <Typography variant="h5" component="div">
-            Pronóstico: Temperatura, Viento y Humedad (24h)
+      <Box>
+         <Typography variant="h5" component="div" sx={{ mb: 2 }}>
+            Pronóstico: Temperatura y Viento (24h)
          </Typography>
          <LineChart
             height={350}
             series={[
                { data: temperatures, label: 'Temperatura (°C)' },
                { data: windSpeeds, label: 'Viento (km/h)' },
-               { data: humidity, label: 'Humedad (%)' },
             ]}
             xAxis={[{ scaleType: 'point', data: times }]}
             margin={{ bottom: 40, left: 50, right: 10, top: 20 }}
          />
-      </>
+      </Box>
    );
 }

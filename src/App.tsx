@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Grid } from '@mui/material';
 import HeaderUI from './components/HeaderUI';
 import AlertUI from './components/AlertUI';
@@ -9,7 +10,11 @@ import useFetchData from './hooks/useFetchData';
 import './App.css'
 
 function App() {
-  const { data, loading, error } = useFetchData();
+  // Estado para la ciudad seleccionada
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  // Comunica la opción seleccionada al hook personalizado
+  const { data, loading, error } = useFetchData(selectedOption);
 
   return (
         <Grid container spacing={5} sx={{ justifyContent: "left", alignItems: "center" }}>
@@ -21,7 +26,7 @@ function App() {
          <Grid size={12} container sx={{ justifyContent: "right", alignItems: "center" }}><AlertUI description="No se preveen lluvias"/></Grid>
 
          {/* Selector */}
-         <Grid size={{ xs: 12, md: 3  }}><SelectorUI/></Grid>
+         <Grid size={{ xs: 12, md: 3  }}><SelectorUI onOptionSelect={setSelectedOption} /></Grid>
 
          {/* Indicadores */}
          <Grid size={{ xs: 12, md: 9 }} container spacing={2}>
