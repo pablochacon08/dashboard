@@ -1,10 +1,13 @@
 import { LineChart } from '@mui/x-charts/LineChart';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 import { CircularProgress, Box } from '@mui/material';
 import { type OpenMeteoResponse } from '../types/DashboardTypes';
 
 interface ChartUIProps {
    data: OpenMeteoResponse | null;
+   loading: boolean;
+   error: string | null;
 }
 
 function processChartData(data: OpenMeteoResponse) {
@@ -20,11 +23,27 @@ function processChartData(data: OpenMeteoResponse) {
    return { times, temperatures, windSpeeds };
 }
 
-export default function ChartUI({ data }: ChartUIProps) {
-   if (!data) {
+export default function ChartUI({ data, loading, error }: ChartUIProps) {
+   if (loading) {
       return (
          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
             <CircularProgress />
+         </Box>
+      );
+   }
+
+   if (error) {
+      return (
+         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+            <Alert severity="error">{error}</Alert>
+         </Box>
+      );
+   }
+
+   if (!data) {
+      return (
+         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+            <Alert severity="info">No hay datos disponibles.</Alert>
          </Box>
       );
    }

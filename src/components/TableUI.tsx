@@ -1,10 +1,13 @@
 import Box from '@mui/material/Box';
-import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import Alert from '@mui/material/Alert';
 import { CircularProgress } from '@mui/material';
+import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { type OpenMeteoResponse } from '../types/DashboardTypes';
 
 interface TableUIProps {
    data: OpenMeteoResponse | null;
+   loading: boolean;
+   error: string | null;
 }
 
 function processHourlyData(data: OpenMeteoResponse) {
@@ -15,7 +18,7 @@ function processHourlyData(data: OpenMeteoResponse) {
       time: new Date(time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
       temperature: data.hourly.temperature_2m[index],
       windSpeed: data.hourly.wind_speed_10m[index],
-      humidity: data.hourly.relative_humidity_2m[index],
+      humidity: data.hourly.relative_humidity_2m?.[index] ?? null,
    }));
 }
 
@@ -30,27 +33,43 @@ const columns: GridColDef[] = [
       field: 'temperature',
       headerName: 'Temperatura (°C)',
       width: 150,
-      valueFormatter: (value: number | null) => value ? value.toFixed(1) : '-',
+      valueFormatter: (value: number | null | undefined) => value === null || value === undefined ? '-' : `${value.toFixed(1)}`,
    },
    {
       field: 'windSpeed',
       headerName: 'Viento (km/h)',
       width: 150,
-      valueFormatter: (value: number | null) => value ? value.toFixed(1) : '-',
+      valueFormatter: (value: number | null | undefined) => value === null || value === undefined ? '-' : `${value.toFixed(1)}`,
    },
    {
       field: 'humidity',
       headerName: 'Humedad (%)',
       width: 130,
-      valueFormatter: (value) => value ? `${value}%` : '-',
+      valueFormatter: (value: number | null | undefined) => value === null || value === undefined ? '-' : `${value}%`,
    },
 ];
 
-export default function TableUI({ data }: TableUIProps) {
-   if (!data) {
+export default function TableUI({ data, loading, error }: TableUIProps) {
+   if (loading) {
       return (
          <Box sx={{ height: 350, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <CircularProgress />
+         </Box>
+      );
+   }
+
+   if (error) {
+      return (
+         <Box sx={{ height: 350, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Alert severity="error">{error}</Alert>
+         </Box>
+      );
+   }
+
+   if (!data) {
+      return (
+         <Box sx={{ height: 350, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Alert severity="info">No hay datos disponibles.</Alert>
          </Box>
       );
    }
