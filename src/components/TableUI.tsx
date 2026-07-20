@@ -11,11 +11,16 @@ interface TableUIProps {
 }
 
 function processHourlyData(data: OpenMeteoResponse) {
-   // Tomar los primeros 24 registros (24 horas)
    const hours = Math.min(24, data.hourly.time.length);
    return data.hourly.time.slice(0, hours).map((time, index) => ({
       id: index,
-      time: new Date(time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+      time: new Date(time).toLocaleString('sv-SE', {
+         year: 'numeric',
+         month: '2-digit',
+         day: '2-digit',
+         hour: '2-digit',
+         minute: '2-digit',
+      }).replace(' ', ' '),
       temperature: data.hourly.temperature_2m[index],
       windSpeed: data.hourly.wind_speed_10m[index],
       humidity: data.hourly.relative_humidity_2m?.[index] ?? null,
@@ -27,7 +32,7 @@ const columns: GridColDef[] = [
    {
       field: 'time',
       headerName: 'Hora',
-      width: 110,
+      width: 170,
    },
    {
       field: 'temperature',
